@@ -10,4 +10,10 @@ const headerAPIKey = {
     'X-MBX-APIKEY': ''
 }
 
-// transactionHistory()
+const generateHMACSignatures = (queryString) => {
+    const hashingAlgo = 'sha256';
+    const hmac = crypto.createHmac(hashingAlgo, api_secret); 
+    const hashed = hmac.update(queryString);
+    const hexhashed = hashed.digest('hex');
+    return hexhashed;
+}
