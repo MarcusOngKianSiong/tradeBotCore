@@ -31,3 +31,25 @@ const executeOneTrade = () => {
 
 }
 
+const oneOrTwoTrades = () => {
+    // If trade is first or last
+    if(counter === 0 || counter === period/interval){
+        console.log("----FIRST----")
+        executeOneTrade().then(res=>{
+            console.log(res)
+        })
+    }else{ // If trade is middle
+        console.log("----MIDDLE----")
+        executeOneTrade().then(res=>{
+            
+            console.log(res);
+            executeOneTrade().then(res=>{
+                console.log(res)
+            })
+        })
+        .catch(err=>{
+            console.log(err)
+        })
+    }
+}
+
