@@ -17,3 +17,27 @@ const generateHMACSignatures = (queryString) => {
     const hexhashed = hashed.digest('hex');
     return hexhashed;
 }
+
+
+const transactionHistory = (asset) => {
+    const link = '/fapi/v1/userTrades?';
+    const query = `symbol=${asset}&timestamp=${Date.now()-1000}`;
+    const HMAC = generateHMACSignatures(query);
+    headerAPIKey['X-MBX-APIKEY'] = api_key;
+    fetch(baseURL+link+query+`&signature=${HMAC}`,{method: 'get', headers: headerAPIKey})
+    .then(res=>{
+       return res.json()
+    })
+    .then(res=>{
+        console.log(res)
+    })
+}
+    
+    transactionHistory("ETHUSDT")
+    
+    // const enterTrade = () => {
+    
+    // }
+    
+    // transactionHistory()
+    
