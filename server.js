@@ -53,3 +53,16 @@ const oneOrTwoTrades = () => {
     }
 }
 
+const int = setInterval(() => {        
+    oneOrTwoTrades()
+    counter+=1;
+    console.log("counter: ",counter);
+    if(counter > period/interval) clearInterval(int);
+}, interval);
+
+
+
+
+// execution().then(res=>{
+    
+// })
