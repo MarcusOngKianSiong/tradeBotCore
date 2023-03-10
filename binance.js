@@ -33,8 +33,25 @@ const transactionHistory = (asset) => {
     })
 }
     
-    transactionHistory("ETHUSDT")
+const enterTrade = (symbol, side, orderType, quantity) => {
+    const path = `/fapi/v1/order?`;
+    const query = `symbol=${symbol}&side=${side}&type=${orderType}&quantity=${quantity}&timestamp=${Date.now()-1000}`;
+    const HMAC = generateHMACSignatures(query);
+    headerAPIKey['X-MBX-APIKEY'] = api_key;
+    fetch(baseURL+path+query+`&signature=${HMAC}`,{method: 'post', headers: headerAPIKey})
+    .then(res=>{
+       return res.json();
+    })
+    .then(res=>{
+        console.log(res);
+    })
+}
+
     
+    // transactionHistory("ETHUSDT")
+    
+enterTrade("ETHUSDT","BUY","MARKET","1")
+
     // const enterTrade = () => {
     
     // }
