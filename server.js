@@ -4,16 +4,20 @@ const sendOrderToBinance = () => {
     })
 }
 
+import * as binance from './binance.js'
 
 let counter = 0;
 const period = 10000;
 const interval = 1000;
 let side = "BUY";
-
+const asset = "ETHUSDT"
+const orderType = "MARKET"
+const quantity = "1"
 
 const executeOneTrade = () => {
 
-    const outcome = sendOrderToBinance().then(res=>{
+    const outcome = binance.enterTrade(asset,side, orderType, quantity).then(res=>{
+        
         let status = ""
         if(side === "BUY"){
             side = "SELL";
