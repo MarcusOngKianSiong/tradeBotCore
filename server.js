@@ -5,6 +5,7 @@ const sendOrderToBinance = () => {
 }
 
 import * as binance from './binance.js'
+import * as db from './database.js'
 
 let counter = 0;
 const period = 10000;
@@ -57,15 +58,30 @@ const oneOrTwoTrades = () => {
     }
 }
 
-const int = setInterval(() => {        
-    oneOrTwoTrades()
-    counter+=1;
-    console.log("counter: ",counter);
-    if(counter > period/interval) clearInterval(int);
-}, interval);
+
+const storeTransactionForCurrentRun = (asset) => {
+    binance.transactionHistory(asset).then(res=>{
+        const numberOfTrades = (period/interval+1-2)*2+2
+        const trades = res.slice(-numberOfTrades);
+        db.insertTransactions(trades)
+        .then(res=>{
+            console.log(res)
+        })
+    })
+}
+
+// const int = setInterval(() => {        
+//     oneOrTwoTrades()
+//     counter+=1;
+//     console.log("counter: ",counter);
+//     if(counter > period/interval) {
+//         binance.transactionHistory
+//         clearInterval(int)
+//     };
+// }, interval);
 
 
-
+storeTransactionForCurrentRun("ETHUSDT")
 
 // execution().then(res=>{
     
