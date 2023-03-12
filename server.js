@@ -9,7 +9,7 @@ const period = 20000;
 const interval = 1000;
 let side = "BUY";
 const asset = "ETHUSDT";
-const orderType = "MARKET";
+const orderType = "MARKET"; 
 const quantity = "1";
 
 const executeOneTrade = () => {
