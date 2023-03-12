@@ -8,12 +8,12 @@ import * as binance from './binance.js'
 import * as db from './database.js'
 
 let counter = 0;
-const period = 10000;
+const period = 20000;
 const interval = 1000;
 let side = "BUY";
-const asset = "ETHUSDT"
-const orderType = "MARKET"
-const quantity = "1"
+const asset = "ETHUSDT";
+const orderType = "MARKET";
+const quantity = "1";
 
 const executeOneTrade = () => {
 
@@ -32,8 +32,7 @@ const executeOneTrade = () => {
     .catch(err=>{
         return `failed to execute ${side} order`;
     })
-    return outcome
-
+    return outcome;
 }
 
 const oneOrTwoTrades = () => {
@@ -58,31 +57,37 @@ const oneOrTwoTrades = () => {
     }
 }
 
-
 const storeTransactionForCurrentRun = (asset) => {
-    binance.transactionHistory(asset).then(res=>{
+    return binance.transactionHistory(asset).then(res=>{
         const numberOfTrades = (period/interval+1-2)*2+2
         const trades = res.slice(-numberOfTrades);
-        db.insertTransactions(trades)
+        return db.insertTransactions(trades)
         .then(res=>{
-            console.log(res)
+            return true
         })
     })
 }
 
-// const int = setInterval(() => {        
-//     oneOrTwoTrades()
-//     counter+=1;
-//     console.log("counter: ",counter);
-//     if(counter > period/interval) {
-//         binance.transactionHistory
-//         clearInterval(int)
-//     };
-// }, interval);
+const calculateAndStoreTotalProfitAndLoss = () => {
+    return db.storeTradingPeriodPerformance(period/interval*2);
+}
+
+const int = setInterval(() => {        
+    oneOrTwoTrades()
+    counter+=1;
+    console.log("counter: ",counter);
+    if(counter > period/interval) {
+        storeTransactionForCurrentRun(asset).then(res=>{
+            calculateAndStoreTotalProfitAndLoss();    
+        })
+        clearInterval(int);
+    };
+}, interval);
 
 
-storeTransactionForCurrentRun("ETHUSDT")
 
 // execution().then(res=>{
     
 // })
+
+
