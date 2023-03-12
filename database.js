@@ -15,15 +15,15 @@ client.connect()
 //     console.log(res.rows)
 // })
 
-const insertTransactions = (transactions) => {
+export const insertTransactions = (transactions) => {
     let valuesString = '';
     transactions.forEach(trade=>{
-       const item = `('${trade.symbol}',${trade.price},${trade.commission},'${trade.side}',to_timestamp(${trade.time})),` 
+       const item = `('${trade.symbol}',${trade.price},${trade.commission},${trade.realizedPnl} ,'${trade.side}',to_timestamp(${trade.time})),` 
        valuesString+=item;
     })
     valuesString = valuesString.slice(0,-1);
 
-    const query = `insert into order_history (asset, price, commission, side, timestamp) values ${valuesString};`
+    const query = `insert into order_history (asset, price, commission, realisedpnl, side, timestamp) values ${valuesString};`
 
     return client.query(query).then(res=>{
         return true
@@ -33,7 +33,9 @@ const insertTransactions = (transactions) => {
     })
 }
 
-
+const insertTradeData = () => {
+    
+}
 
 
 // binance.transactionHistory("ETHUSDT").then(res=>{
