@@ -33,8 +33,14 @@ export const insertTransactions = (transactions) => {
     })
 }
 
-const insertTradeData = () => {
-    
+const getLatestTransactionData = (numberOfTransactions) => {
+    // Getting the values from the bottom of the list
+    return client.query(`select * from order_history;`)
+    .then(res=>{
+        const rows = res.rows
+        const latestTransactions = rows.splice(-numberOfTransactions);
+        return latestTransactions;
+    })
 }
 
 
