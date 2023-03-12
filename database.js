@@ -43,6 +43,46 @@ const getLatestTransactionData = (numberOfTransactions) => {
     })
 }
 
+const storeTradingPeriodPerformance = (numberOfTransactions) => {
+
+    // Retrieve the value from order_history
+    return getLatestTransactionData(numberOfTransactions).then(res=>{
+
+        // Convert it to date format
+        const beginTime = new Date(res[0].timestamp);
+        const endTime = new Date(res[res.length-1].timestamp);
+
+        // Convert to ISOString format
+        const beginningTimeStamp = beginTime.toISOString();
+        const endingTimeStamp = endTime.toISOString();
+
+        let totalPnL = 0;
+        // Get Total PNL;
+        // console.log(res);
+
+        res.forEach(transact=>{
+            totalPnL += parseFloat(transact.realisedpnl);
+            // console.log(`${toISOString(transact.timestamp)}`);
+        })
+
+        const values = `('${res[0].asset}',${numberOfTransactions},${res.length/2},to_timestamp('${beginningTimeStamp}','YYYY-MM-DDTHH24:MI:SS.MS'),to_timestamp('${endingTimeStamp}','YYYY-MM-DDTHH24:MI:SS.MS'),${totalPnL})`;
+        console.log(values)
+
+        // // console.log(values)
+        return client.query(`insert into trading_period_performance (asset,num_transactions, num_trades, from_timestamp, to_timestamp, total_pnl) values ${values}`).then(res=>{
+            return true; 
+        })
+        .catch(err=>{
+            console.log(err);
+            return false;
+        })
+    })
+}
+
+storeTradingPeriodPerformance(5)
+.then(res=>{
+    console.log(res)
+})
 
 // binance.transactionHistory("ETHUSDT").then(res=>{
 
