@@ -1,11 +1,8 @@
-const sendOrderToBinance = () => {
-    return new Promise((resolve,reject)=>{
-        resolve({success: true})
-    })
-}
-
 import * as binance from './binance.js'
 import * as db from './database.js'
+
+import express from 'express';
+const app = express();
 
 let counter = 0;
 const period = 20000;
@@ -72,22 +69,22 @@ const calculateAndStoreTotalProfitAndLoss = () => {
     return db.storeTradingPeriodPerformance(period/interval*2);
 }
 
-const int = setInterval(() => {        
-    oneOrTwoTrades()
-    counter+=1;
-    console.log("counter: ",counter);
-    if(counter > period/interval) {
-        storeTransactionForCurrentRun(asset).then(res=>{
-            calculateAndStoreTotalProfitAndLoss();    
-        })
-        clearInterval(int);
-    };
-}, interval);
 
+app.get('/execute',(req,res)=>{
+    const int = setInterval(() => {        
+        oneOrTwoTrades()
+        counter+=1;
+        console.log("counter: ",counter);
+        if(counter > period/interval) {
+            storeTransactionForCurrentRun(asset).then(res=>{
+                calculateAndStoreTotalProfitAndLoss();    
+            })
+            clearInterval(int);
+        };
+    }, interval);   
+})
 
-
-// execution().then(res=>{
-    
-// })
-
+app.listen(3000,()=>{
+    console.log("Listening on port 3000....")
+})
 
