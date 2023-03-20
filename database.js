@@ -1,5 +1,7 @@
 import pg from 'pg'
 import * as binance from './binance.js'
+import * as time from './time.js'
+
 
 const client = new pg.Client({
     user: 'postgres',
@@ -15,25 +17,31 @@ client.connect()
 //     console.log(res.rows)
 // })
 
+
+
 export const insertTransactions = (transactions) => {
+
     let valuesString = '';
     transactions.forEach(trade=>{
-       const item = `('${trade.symbol}',${trade.price},${trade.commission},${trade.realizedPnl} ,'${trade.side}',to_timestamp(${trade.time})),` 
+       const timestamp = trade.time;
+       const dateAndTime = time.convertBinanceTimestampToDateAndTime(timestamp);
+       const item = `('${trade.symbol}',${trade.price},${trade.commission},${trade.realizedPnl} ,'${trade.side}','${dateAndTime[0]}','${dateAndTime[1]}'),`;
        valuesString+=item;
     })
     valuesString = valuesString.slice(0,-1);
 
-    const query = `insert into order_history (asset, price, commission, realisedpnl, side, timestamp) values ${valuesString};`
-
+    const query = `insert into order_history (asset, price, commission, realisedpnl, side, date, time) values ${valuesString};`
+    
     return client.query(query).then(res=>{
-        return true
+        return true;
     })
     .catch(err=>{
-        return false
+        return false;
     })
+
 }
 
-const getLatestTransactionData = (numberOfTransactions) => {
+export const getLatestTransactionData = (numberOfTransactions) => {
     // Getting the values from the bottom of the list
     return client.query(`select * from order_history;`)
     .then(res=>{
@@ -43,10 +51,11 @@ const getLatestTransactionData = (numberOfTransactions) => {
     })
 }
 
-const storeTradingPeriodPerformance = (numberOfTransactions) => {
+export const storeTradingPeriodPerformance = (numberOfTransactions) => {
 
     // Retrieve the value from order_history
     return getLatestTransactionData(numberOfTransactions).then(res=>{
+
 
         // Convert it to date format
         const beginTime = new Date(res[0].timestamp);
@@ -79,10 +88,10 @@ const storeTradingPeriodPerformance = (numberOfTransactions) => {
     })
 }
 
-storeTradingPeriodPerformance(5)
-.then(res=>{
-    console.log(res)
-})
+// storeTradingPeriodPerformance(5)
+// .then(res=>{
+//     console.log(res)
+// })
 
 // binance.transactionHistory("ETHUSDT").then(res=>{
 
