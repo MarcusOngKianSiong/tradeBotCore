@@ -56,14 +56,19 @@ export const storeTradingPeriodPerformance = (numberOfTransactions) => {
     // Retrieve the value from order_history
     return getLatestTransactionData(numberOfTransactions).then(res=>{
 
+        
+        const startDate = time.convertDateFromPSQLIntoSingaporeDate(res[0].date);
+        const endDate = time.convertDateFromPSQLIntoSingaporeDate(res[res.length-1].date);
 
-        // Convert it to date format
-        const beginTime = new Date(res[0].timestamp);
-        const endTime = new Date(res[res.length-1].timestamp);
+        // get end date
+        const startTime = res[0].time;
+        const endTime = res[res.length-1].time;
 
-        // Convert to ISOString format
-        const beginningTimeStamp = beginTime.toISOString();
-        const endingTimeStamp = endTime.toISOString();
+        
+
+        // // Convert to ISOString format
+        // const beginningTimeStamp = beginTime.toISOString();
+        // const endingTimeStamp = endTime.toISOString();
 
         let totalPnL = 0;
         // Get Total PNL;
@@ -74,11 +79,11 @@ export const storeTradingPeriodPerformance = (numberOfTransactions) => {
             // console.log(`${toISOString(transact.timestamp)}`);
         })
 
-        const values = `('${res[0].asset}',${numberOfTransactions},${res.length/2},to_timestamp('${beginningTimeStamp}','YYYY-MM-DDTHH24:MI:SS.MS'),to_timestamp('${endingTimeStamp}','YYYY-MM-DDTHH24:MI:SS.MS'),${totalPnL})`;
+        const values = `('${res[0].asset}',${numberOfTransactions},${res.length/2},'${startDate}','${endDate}','${startTime}','${endTime}',${totalPnL})`;
         console.log(values)
 
         // // console.log(values)
-        return client.query(`insert into trading_period_performance (asset,num_transactions, num_trades, from_timestamp, to_timestamp, total_pnl) values ${values}`).then(res=>{
+        return client.query(`insert into trading_period_performance (asset,num_transactions, num_trades, from_date, to_date, from_time, to_time, total_pnl) values ${values}`).then(res=>{
             return true; 
         })
         .catch(err=>{
@@ -125,3 +130,9 @@ export const storeTradingPeriodPerformance = (numberOfTransactions) => {
 // export const storeTradeOrder = () => {
 //     client.query
 // }
+
+client.query(`select * from order_history;`).then(res=>{
+    console.log("this: ",time.convertDateFromPSQLIntoSingaporeDate(res.rows[0].date))
+    // console.log("THIS:",res.rows[0].date)
+    // console.log("time: ",res.rows[0].time)
+})
