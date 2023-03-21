@@ -51,6 +51,19 @@ export const getLatestTransactionData = (numberOfTransactions) => {
     })
 }
 
+export const getAllPerformanceData = () => {
+    return client.query(`select * from trading_period_performance;`).then(res=>{
+        const formattedDate = []
+        res.rows.forEach(period=>{
+            period.from_date = time.convertDateFromPSQLIntoSingaporeDate(period.from_date);
+            period.to_date = time.convertDateFromPSQLIntoSingaporeDate(period.to_date);
+            formattedDate.push(period);
+        })
+        console.log(formattedDate)
+        return formattedDate;
+    })
+}
+
 export const storeTradingPeriodPerformance = (numberOfTransactions) => {
 
     // Retrieve the value from order_history
