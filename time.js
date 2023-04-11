@@ -18,6 +18,8 @@ export function convertDateFromPSQLIntoSingaporeDate(date){
     
 }
 
+
+
 // export function convertBinanceTimestampToTime(timestamp){
 //     const dateAndTime = new Date(timestamp);
 //     dateAndTime.setHours(dateAndTime.getHours()+8);
